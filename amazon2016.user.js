@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Amazon 2016
 // @namespace    https://github.com/meowmew124/amazon2016
-// @version      0.1.0
+// @version      0.2.0
 // @description  Makes amazon.com look like it did in 2016: header, nav, search bar and product pages.
 // @match        https://www.amazon.com/*
 // @match        https://amazon.com/*
@@ -115,13 +115,18 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
 .nav-search-scope:hover { background: #dadada !important; }
 .nav-search-label { font-size: 12px !important; color: #555 !important; }
 #twotabsearchtextbox { font-size: 15px !important; color: #111 !important; }
-.nav-search-submit, .nav-search-submit .nav-search-submit-text, #nav-search-submit-button {
+.nav-search-submit, .nav-search-submit .nav-search-submit-text {
   background-color: #febd69 !important;
   border-radius: 0 4px 4px 0 !important;
+  height: 35px !important;
 }
+#nav-search-submit-button { background: transparent !important; height: 35px !important; }
+#nav-search-submit-text-agent { display: none !important; }
 .nav-search-submit:hover, .nav-search-submit:hover .nav-search-submit-text { background-color: #f3a847 !important; }
 
-/* Promo slot on the right of the belt */
+/* Promo on the right of the belt: Amazon's own banner if there is one, else ours */
+#nav-belt #nav-swmslot { display: flex !important; align-items: center; width: 400px; height: 60px; padding-right: 10px; overflow: hidden; }
+#nav-belt #nav-swmslot img { max-width: 400px; max-height: 39px; }
 #a16-swm {
   display: flex; flex-direction: column; justify-content: center;
   width: 380px; height: 60px; padding-right: 14px;
@@ -131,14 +136,16 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
 #a16-swm .a16-swm-big   { font-size: 20px; line-height: 24px; color: #fff; font-weight: bold; }
 #a16-swm .a16-swm-big b { color: #febd69; }
 #a16-swm:hover .a16-swm-big { text-decoration: underline; }
-@media (max-width: 1100px) { #a16-swm { display: none; } }
+@media (max-width: 1100px) { #a16-swm, #nav-belt #nav-swmslot { display: none !important; } }
 
 /* Things 2016 didn't have */
-#icp-nav-flyout, #nav-main #nav-tools > #icp-nav-flyout, #nav-swmslot { display: none !important; }
+#icp-nav-flyout, #nav-main #nav-tools > #icp-nav-flyout, #nav-main #nav-swmslot { display: none !important; }
+#nav-main #nav-tools .nav-flyout-button { display: none !important; }
+#nav-main #nav-cart .nav-arrow { display: none !important; }
 
 /* Second row: Deliver to, Departments, links, account/orders/prime/cart */
 #nav-main .nav-left { padding-left: 4px; }
-#nav-main #nav-global-location-slot { height: 39px; display: flex; align-items: center; margin-right: 4px; }
+#nav-main #nav-global-location-slot { height: 39px !important; min-height: 0 !important; display: flex; align-items: center; margin-right: 4px; padding: 0 !important; }
 #nav-main #nav-global-location-popover-link { padding: 2px 6px !important; }
 #nav-main .nav-line-1, #nav-main #glow-ingress-line1 {
   font-size: 12px !important; line-height: 14px !important; color: #ccc !important; font-weight: normal !important;
@@ -160,7 +167,7 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
   border: 4px solid transparent; border-top: 5px solid #a7acb2; border-bottom: 0;
 }
 
-#nav-xshop-container, #nav-xshop { height: 39px !important; display: flex !important; align-items: flex-end !important; overflow: hidden; }
+#nav-xshop-container, #nav-xshop { height: 39px !important; display: flex !important; flex-direction: row !important; align-items: flex-end !important; justify-content: flex-start !important; overflow: hidden; }
 #nav-xshop { margin: 0 !important; padding: 0 0 0 6px !important; list-style: none !important; }
 #nav-xshop .nav-li, #nav-xshop .nav-div { display: flex; align-items: flex-end; }
 #nav-xshop a.nav-a {
@@ -179,12 +186,20 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
   height: 39px !important; padding: 0 9px 6px !important; margin: 0 !important;
   box-sizing: border-box; text-decoration: none !important; float: none !important;
 }
-#nav-main #nav-link-accountList > a.nav-a { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; padding: 0 !important; text-decoration: none !important; }
-#nav-main #nav-tools .nav-line-1-container { line-height: 14px !important; }
+#nav-main #nav-link-accountList > a.nav-a { display: flex !important; flex-direction: column !important; justify-content: flex-end !important; height: 33px !important; padding: 0 !important; text-decoration: none !important; }
+#nav-main #nav-tools .nav-line-1-container { height: auto !important; line-height: 14px !important; }
 #nav-main #nav-orders .nav-line-1:empty { display: none !important; }
-#nav-main #nav-cart { flex-direction: row !important; align-items: flex-end !important; }
-#nav-main #nav-cart-count-container { position: relative; height: 30px !important; }
-#nav-main #nav-cart .nav-cart-count { color: #f08804 !important; font-weight: bold !important; }
+#nav-main #nav-cart { position: relative !important; }
+#nav-main #nav-cart-count-container {
+  position: absolute !important; left: 9px !important; bottom: 7px !important; top: auto !important;
+  width: 38px !important; height: 26px !important; margin: 0 !important;
+}
+#nav-main #nav-cart .nav-cart-icon { position: absolute !important; left: 0 !important; top: 0 !important; }
+#nav-main #nav-cart .nav-cart-count {
+  position: absolute !important; left: 9px !important; top: -4px !important; width: 19px !important;
+  text-align: center !important; font-size: 13px !important; line-height: 16px !important;
+  color: #f08804 !important; font-weight: bold !important; margin: 0 !important;
+}
 #nav-main #nav-cart-text-container .nav-line-1 { display: none !important; }
 #nav-main #nav-cart-text-container .nav-line-2 { padding-bottom: 1px; }
 
@@ -209,10 +224,10 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
 #buybox .a-price :is(span:not(.a-offscreen), .a-price-symbol, .a-price-whole, .a-price-decimal, .a-price-fraction) {
   font-size: 17px !important; line-height: 21px !important;
   vertical-align: baseline !important; position: static !important; top: 0 !important;
-  font-weight: normal !important;
+  font-weight: normal !important; opacity: 1 !important;
 }
-#corePriceDisplay_desktop_feature_div .priceToPay::before,
-#corePrice_feature_div .a-price:first-of-type::before {
+#centerCol #corePriceDisplay_desktop_feature_div .priceToPay::before,
+#centerCol #corePrice_feature_div .a-price:first-of-type::before {
   content: "Price: "; color: #555; font-size: 13px; margin-right: 4px; vertical-align: baseline;
 }
 #corePriceDisplay_desktop_feature_div .savingsPercentage { font-size: 13px !important; color: #B12704 !important; }
@@ -291,7 +306,9 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
     if (loc && loc.parentElement !== mainLeft) mainLeft.prepend(loc);
 
     // Promo where the account links used to be
-    if (!$('#a16-swm')) {
+    const swm = $('#nav-swmslot');
+    if (swm && swm.parentElement !== beltRight) beltRight.appendChild(swm);
+    if (!swm && !$('#a16-swm')) {
       beltRight.appendChild(el('a', { id: 'a16-swm', href: '/amazonprime' }, [
         el('span', { className: 'a16-swm-small', textContent: 'Amazon Prime' }),
         el('span', { className: 'a16-swm-big', innerHTML: '<b>FREE</b> Two-Day Shipping' }),
@@ -327,6 +344,10 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
     if (accountLine1 && /^\s*hello,\s*sign in\s*$/i.test(accountLine1.textContent)) {
       accountLine1.textContent = 'Hello. Sign in';
     }
+
+    // "Account & Lists ▾" (Amazon now uses a separate flyout button for the arrow)
+    const accountLine2 = $('#nav-link-accountList .nav-line-2');
+    if (accountLine2 && once(accountLine2, 'Caret')) accountLine2.append(caret());
 
     // "Returns & Orders" -> "Orders"
     const orders = $('#nav-orders');
@@ -378,5 +399,6 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
   // Amazon fills parts of the header and page in after load, so re-apply on changes.
   // Every step above is a no-op once applied, so this settles after one pass.
   new MutationObserver(schedule).observe(document, { childList: true, subtree: true });
-  document.addEventListener('DOMContentLoaded', run);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
 })();
