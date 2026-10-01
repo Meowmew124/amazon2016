@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Amazon 2016
 // @namespace    https://github.com/meowmew124/amazon2016
-// @version      0.2.0
+// @version      0.2.1
 // @description  Makes amazon.com look like it did in 2016: header, nav, search bar and product pages.
 // @match        https://www.amazon.com/*
 // @match        https://amazon.com/*
@@ -369,12 +369,11 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
   }
 
   function restyleProductPage() {
-    // "1,234 ratings" -> "1,234 customer reviews"
+    // "1,234 ratings" or "(1,234)" -> "1,234 customer reviews"
     const reviews = $('#acrCustomerReviewText');
-    if (reviews && /\bratings?\b/i.test(reviews.textContent)) {
-      reviews.textContent = reviews.textContent
-        .replace(/\bratings\b/i, 'customer reviews')
-        .replace(/\brating\b/i, 'customer review');
+    const match = reviews && reviews.textContent.match(/^\s*\(?\s*([\d,.]+)\s*(ratings?)?\s*\)?\s*$/i);
+    if (match) {
+      reviews.textContent = match[1] + (match[1] === '1' ? ' customer review' : ' customer reviews');
     }
   }
 

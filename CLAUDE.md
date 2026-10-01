@@ -5,6 +5,9 @@
 - Testing on live amazon.com with Playwright works in the cloud env once Chromium trusts the environment CAs:
   import every `O = Anthropic` cert from `/root/.ccr/ca-bundle.crt` into `sql:/root/.pki/nssdb` with `certutil -A -t "C,,"`.
   Use a persistent browser profile and click through Amazon's "Continue shopping" check. Direct `/s?k=` search URLs
-  get blocked; reach pages by clicking links from the homepage instead. web.archive.org resets connections from here.
+  get blocked; type into `#twotabsearchtextbox` on the homepage and click `#nav-search-submit-button` instead.
+  Amazon Basics AA batteries (B00MNV8E0C) is a good product page with lots of reviews.
+- Wayback: `archive.org/wayback/available?url=…` works for finding snapshot URLs, but the snapshots themselves live on
+  web.archive.org, which the environment's network policy blocks. Don't route around the policy; ask the user to allow it.
 - Amazon's real markup changes often; prefer IDs (`#nav-belt`, `#nav-main`, `#nav-tools`, `#productTitle`, …) and keep DOM edits idempotent (the script re-runs on every mutation).
 - User may add 2016 Wayback screenshots in `refs/` — check there first for reference.
