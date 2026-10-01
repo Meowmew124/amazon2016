@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Amazon 2016
 // @namespace    https://github.com/meowmew124/amazon2016
-// @version      0.3.0
+// @version      0.3.1
 // @description  Makes amazon.com look like it did in 2016: header, nav, search bar, search results and product pages.
 // @match        https://www.amazon.com/*
 // @match        https://amazon.com/*
@@ -139,18 +139,16 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
 @media (max-width: 1100px) { #a16-swm, #nav-belt #nav-swmslot { display: none !important; } }
 
 /* Things 2016 didn't have */
-#icp-nav-flyout, #nav-main #nav-tools > #icp-nav-flyout, #nav-main #nav-swmslot { display: none !important; }
+#icp-nav-flyout, #nav-main #nav-tools > #icp-nav-flyout, #nav-global-location-slot, #nav-main #nav-swmslot { display: none !important; }
 #nav-main #nav-tools .nav-flyout-button { display: none !important; }
 #nav-main #nav-cart .nav-arrow { display: none !important; }
 
-/* Second row: Deliver to, Departments, links, account/orders/prime/cart */
+/* Second row: Departments, links, account/orders/prime/cart (no "Deliver to" in 2016) */
 #nav-main .nav-left { padding-left: 4px; }
-#nav-main #nav-global-location-slot { height: 39px !important; min-height: 0 !important; display: flex; align-items: center; margin-right: 4px; padding: 0 !important; }
-#nav-main #nav-global-location-popover-link { padding: 2px 6px !important; }
-#nav-main .nav-line-1, #nav-main #glow-ingress-line1 {
+#nav-main .nav-line-1 {
   font-size: 12px !important; line-height: 14px !important; color: #ccc !important; font-weight: normal !important;
 }
-#nav-main .nav-line-2, #nav-main #glow-ingress-line2 {
+#nav-main .nav-line-2 {
   font-size: 13px !important; line-height: 15px !important; color: #fff !important; font-weight: bold !important;
 }
 
@@ -329,7 +327,6 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
     if (!belt || !main) return;
 
     const beltRight = childByClass(belt, 'nav-right');
-    const mainLeft = childByClass(main, 'nav-left');
     const mainRight = childByClass(main, 'nav-right');
 
     // "Try Prime" under the logo
@@ -341,10 +338,6 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
     // Account / orders / cart move down to the second row
     const tools = $('#nav-tools');
     if (tools && tools.parentElement !== mainRight) mainRight.appendChild(tools);
-
-    // "Deliver to" moves down to the second row, left side
-    const loc = $('#nav-global-location-slot');
-    if (loc && loc.parentElement !== mainLeft) mainLeft.prepend(loc);
 
     // Promo where the account links used to be
     const swm = $('#nav-swmslot');
