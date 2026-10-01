@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Amazon 2016
 // @namespace    https://github.com/meowmew124/amazon2016
-// @version      0.2.1
-// @description  Makes amazon.com look like it did in 2016: header, nav, search bar and product pages.
+// @version      0.3.0
+// @description  Makes amazon.com look like it did in 2016: header, nav, search bar, search results and product pages.
 // @match        https://www.amazon.com/*
 // @match        https://amazon.com/*
 // @run-at       document-start
@@ -233,6 +233,47 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
 #corePriceDisplay_desktop_feature_div .savingsPercentage { font-size: 13px !important; color: #B12704 !important; }
 
 #buybox .a-box, #desktop_buybox .a-box { border-color: #ddd !important; }
+/* ---------- Search results ---------- */
+.a16-hidden { display: none !important; }
+.s-desktop-toolbar { box-shadow: none !important; border-bottom: 1px solid #ddd !important; }
+/* the "Results / Check each product page..." heading */
+.s-main-slot > .s-result-item:has(.s-messaging-widget-results-header) { display: none !important; }
+
+/* Plain white tiles: no card borders, no grey image backdrop */
+[data-component-type="s-search-result"] .s-card-container,
+[data-component-type="s-search-result"] .puis-card-container {
+  border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #fff !important;
+}
+[data-component-type="s-search-result"] .s-product-image-container,
+[data-component-type="s-search-result"] .puis-status-badge-container { background: #fff !important; }
+[data-component-type="s-search-result"] .s-image-overlay-grey::after,
+[data-component-type="s-search-result"] .puis-image-overlay-grey::after { display: none !important; }
+
+/* Blue title, with "by Brand" underneath */
+[data-component-type="s-search-result"] .s-title-instructions-style a h2,
+[data-component-type="s-search-result"] .s-title-instructions-style a h2 span {
+  color: #0066c0 !important; font-size: 14px !important; line-height: 19px !important; font-weight: normal !important;
+}
+[data-component-type="s-search-result"] .s-title-instructions-style a:hover h2 span { color: #c45500 !important; text-decoration: underline; }
+.a16-by, .a16-by h2, .a16-by span { font-size: 12px !important; line-height: 16px !important; color: #555 !important; font-weight: normal !important; }
+.a16-by h2 > span::before { content: "by "; }
+
+/* Stars ▾ 955,442 (no "4.7" in front) */
+[data-component-type="s-search-result"] .a-row.a-size-small > span.a-size-small.a-color-base[aria-hidden="true"] { display: none !important; }
+[data-component-type="s-search-result"] a[aria-label$=" ratings"] span,
+[data-component-type="s-search-result"] a[aria-label$=" rating"] span { color: #0066c0 !important; font-size: 13px !important; }
+
+/* Bold red price */
+[data-component-type="s-search-result"] .a-price:not(.a-text-price) { color: #B12704 !important; }
+[data-component-type="s-search-result"] .a-price:not(.a-text-price) :is(span:not(.a-offscreen), .a-price-symbol, .a-price-whole, .a-price-decimal, .a-price-fraction) {
+  font-size: 15px !important; line-height: 19px !important; font-weight: bold !important;
+  vertical-align: baseline !important; position: static !important; top: 0 !important; opacity: 1 !important;
+}
+[data-component-type="s-search-result"] .udm-delivery-block { font-size: 12px !important; line-height: 16px !important; }
+
+/* Sustainability badges didn't exist in 2016 */
+[data-component-type="s-search-result"] .s-pc-faceout-container,
+#climatePledgeFriendlyATF_feature_div, #climatePledgeFriendly { display: none !important; }
 `;
 
   function injectStyle() {
@@ -377,6 +418,34 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
     }
   }
 
+  function restyleSearchResults() {
+    for (const item of document.querySelectorAll('[data-component-type="s-search-result"]')) {
+      // Wait until the card has rendered, then do it once
+      if (!item.querySelector('.s-title-instructions-style') || !once(item, 'Result')) continue;
+
+      // Brand row above the title -> "by Brand" below it
+      const titleBlock = item.querySelector('.s-title-instructions-style');
+      const brandRow = titleBlock && titleBlock.querySelector(':scope > .a-row.a-color-secondary');
+      const titleLink = titleBlock && titleBlock.querySelector(':scope > a');
+      if (brandRow && titleLink) {
+        brandRow.classList.add('a16-by');
+        titleLink.after(brandRow);
+      }
+
+      // "(955.4K)" -> "955,442", using the exact count from the link's label
+      const countLink = item.querySelector('a[aria-label$=" ratings"], a[aria-label$=" rating"]');
+      const count = countLink && countLink.getAttribute('aria-label').match(/^([\d,]+) ratings?$/);
+      const countText = countLink && countLink.querySelector('span');
+      if (count && countText) countText.textContent = count[1];
+
+      // "100K+ bought in past month" wasn't a thing
+      for (const span of item.querySelectorAll('span.a-color-secondary')) {
+        const row = span.closest('.a-row');
+        if (row && /bought in past month/i.test(span.textContent)) row.classList.add('a16-hidden');
+      }
+    }
+  }
+
   let queued = false;
   function run() {
     queued = false;
@@ -384,6 +453,7 @@ a:hover, a:active, .a-link-normal:hover { color: #c45500; }
     try {
       restyleHeader();
       restyleProductPage();
+      restyleSearchResults();
     } catch (err) {
       console.error('[amazon2016]', err);
     }
